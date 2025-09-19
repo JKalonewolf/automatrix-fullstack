@@ -1,7 +1,7 @@
 // src/services/authService.ts
 import axios from 'axios'
 
-const API_URL = 'http://localhost:5000/api/auth'
+const API_URL = 'https://automatrix-h2js.onrender.com/api' // Updated to deployed backend URL
 
 // Login remains the same
 export const login = async (email: string, password: string) => {
