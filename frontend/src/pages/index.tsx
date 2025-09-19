@@ -54,12 +54,12 @@ export default function Home() {
           },
           {
             name: 'BMW i8',
-            img: '/cars/bmw.jpg',
+            img: '/cars/BWM.jpg',
             desc: 'Hybrid sports car with cutting-edge design.',
           },
           {
             name: 'Audi R8',
-            img: '/cars/audi.jpg',
+            img: '/cars/Audi.jpg',
             desc: 'Unmatched performance and iconic style.',
           },
         ].map((car, index) => (
