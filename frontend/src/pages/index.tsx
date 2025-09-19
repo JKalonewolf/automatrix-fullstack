@@ -54,7 +54,7 @@ export default function Home() {
           },
           {
             name: 'BMW i8',
-            img: '/cars/BWM.jpg',
+            img: '/cars/BMW.jpg',
             desc: 'Hybrid sports car with cutting-edge design.',
           },
           {
