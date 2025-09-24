@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { Car } from '@/types'
 
-const API_URL = 'https://automatrix-backend.onrender.com/api'
+const API_URL = 'https://automatrix-h2js.onrender.com/api'
 
 // ✅ helper to get token from localStorage
 const getAuthHeaders = () => {

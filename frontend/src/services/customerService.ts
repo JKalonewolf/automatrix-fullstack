@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Customer } from '@/types'
 
 
-const API_URL = 'https://automatrix-backend.onrender.com/api'
+const API_URL = 'https://automatrix-h2js.onrender.com/api'
 
 // Helper to include JWT token
 const getAuthHeaders = () => {
