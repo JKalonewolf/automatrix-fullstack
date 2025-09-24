@@ -117,7 +117,7 @@ export default function ServicesPage() {
               <thead className="bg-gradient-to-r from-blue-700 to-purple-700 text-white">
                 <tr>
                   <th className="py-3 px-4 text-left">Customer</th>
-                  <th className="py-3 px-4 text-left">Car</th>
+                  <th className="py-3 px-4 text-left"></th>
                   <th className="py-3 px-4 text-left">Service Type</th>
                   <th className="py-3 px-4 text-left">Notes</th>
                   <th className="py-3 px-4 text-left">Actions</th>

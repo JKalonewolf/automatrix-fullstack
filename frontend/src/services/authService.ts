@@ -1,19 +1,19 @@
 // src/services/authService.ts
 import axios from 'axios'
 
-// Use .env for flexibility
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://automatrix-backend.onrender.com/api/auth'
+// authService.ts
+const API_URL = 'https://automatrix-backend.onrender.com/api/auth'
 
-// ✅ Login
+// Login remains the same
 export const login = async (email: string, password: string) => {
   const response = await axios.post(`${API_URL}/login`, {
     email: email.trim().toLowerCase(),
     password,
   })
-  return response.data // return { user, token }
+  return response.data // ✅ only return { user, token }
 }
 
-// ✅ Register
+// Updated register to accept role
 export const register = async (
   name: string,
   email: string,
@@ -24,7 +24,7 @@ export const register = async (
     name,
     email: email.trim().toLowerCase(),
     password,
-    role,
+    role, // send role to backend
   })
-  return response.data // return { user, token }
+  return response.data // ✅ only return { user, token }
 }
