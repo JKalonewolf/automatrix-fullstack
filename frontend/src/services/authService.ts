@@ -1,23 +1,16 @@
 // src/services/authService.ts
 import axios from 'axios'
 
-// ✅ Always point to the correct backend route
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  'https://automatrix-h2js.onrender.com/api/auth'
-
-// ✅ Axios instance (optional but cleaner)
-const api = axios.create({
-  baseURL: API_URL,
-})
+// ✅ Correct API base
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://automatrix-h2js.onrender.com/api/auth'
 
 // Login
 export const login = async (email: string, password: string) => {
-  const response = await api.post('/login', {
+  const response = await axios.post(`${API_URL}/login`, {
     email: email.trim().toLowerCase(),
     password,
   })
-  return response.data // { user, token }
+  return response.data
 }
 
 // Register
@@ -27,11 +20,11 @@ export const register = async (
   password: string,
   role: string = 'customer'
 ) => {
-  const response = await api.post('/register', {
+  const response = await axios.post(`${API_URL}/register`, {
     name,
     email: email.trim().toLowerCase(),
     password,
     role,
   })
-  return response.data // { user, token }
+  return response.data
 }
