@@ -1,30 +1,37 @@
 // src/services/authService.ts
 import axios from 'axios'
 
-// authService.ts
-const API_URL = 'https://automatrix-h2js.onrender.com//api/auth'
+// ✅ Always point to the correct backend route
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  'https://automatrix-h2js.onrender.com/api/auth'
 
-// Login remains the same
+// ✅ Axios instance (optional but cleaner)
+const api = axios.create({
+  baseURL: API_URL,
+})
+
+// Login
 export const login = async (email: string, password: string) => {
-  const response = await axios.post(`${API_URL}/login`, {
+  const response = await api.post('/login', {
     email: email.trim().toLowerCase(),
     password,
   })
-  return response.data // ✅ only return { user, token }
+  return response.data // { user, token }
 }
 
-// Updated register to accept role
+// Register
 export const register = async (
   name: string,
   email: string,
   password: string,
-  role: string = 'customer' // default role
+  role: string = 'customer'
 ) => {
-  const response = await axios.post(`${API_URL}/register`, {
+  const response = await api.post('/register', {
     name,
     email: email.trim().toLowerCase(),
     password,
-    role, // send role to backend
+    role,
   })
-  return response.data // ✅ only return { user, token }
+  return response.data // { user, token }
 }
