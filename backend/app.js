@@ -18,8 +18,6 @@ app.use((req, res, next) => {
 // ---------- CORS Config ----------
 const corsOptions = {
   origin: [
-    'http://localhost:3000',
-    'https://automatrix-eta.vercel.app',
     'https://automatrix-7pj8o9ph3-jaya-kumars-projects-5985ebc3.vercel.app',
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],

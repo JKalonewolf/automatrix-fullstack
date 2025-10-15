@@ -1,15 +1,29 @@
-import axios from 'axios'
-import { Car } from '@/types'
+import axios, { AxiosResponse } from 'axios';
+import { Car } from '@/types'; // your Car interface
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://automatrix-h2js.onrender.com/api/auth';
-// ✅ helper to get token from localStorage
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token')
-  return { headers: { Authorization: `Bearer ${token}` } }
-}
+const API_URL = "https://automatrix-h2js.onrender.com/api/cars";
 
-export const getCars = () => axios.get<Car[]>(`${API_URL}/cars`, getAuthHeaders())
-export const getCar = (id: string) => axios.get<Car>(`${API_URL}/cars/${id}`, getAuthHeaders())
-export const createCar = (data: Partial<Car>) => axios.post(`${API_URL}/cars`, data, getAuthHeaders())
-export const updateCar = (id: string, data: Partial<Car>) => axios.put(`${API_URL}/cars/${id}`, data, getAuthHeaders())
-export const deleteCar = (id: string) => axios.delete(`${API_URL}/cars/${id}`, getAuthHeaders())
+// Get all cars
+export const getCars = (): Promise<AxiosResponse<Car[]>> => axios.get<Car[]>(`${API_URL}`);
+
+// Get a single car by ID
+export const getCarById = (id: string): Promise<AxiosResponse<Car>> =>
+  axios.get<Car>(`${API_URL}/${id}`);
+
+// Create a new car (requires token)
+export const createCar = (carData: Omit<Car, '_id'>, token?: string): Promise<AxiosResponse<Car>> =>
+  axios.post<Car>(`${API_URL}`, carData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+// Update a car
+export const updateCar = (id: string, carData: Partial<Omit<Car, '_id'>>, token?: string): Promise<AxiosResponse<Car>> =>
+  axios.put<Car>(`${API_URL}/${id}`, carData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+// Delete a car
+export const deleteCar = (id: string, token?: string): Promise<AxiosResponse<{ message: string }>> =>
+  axios.delete<{ message: string }>(`${API_URL}/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });

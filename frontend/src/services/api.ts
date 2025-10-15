@@ -1,20 +1,19 @@
-import axios from 'axios'
+import axios from 'axios';
 
-// Base API URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://automatrix-backend.onrender.com/api/auth'
-
-// Create Axios instance
 const api = axios.create({
-  baseURL: API_URL,
-})
+  baseURL: 'https://automatrix-h2js.onrender.com/api', // baseURL includes /api
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-// Attach Authorization header automatically
+// Include JWT automatically if present
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('token');
+    if (token) config.headers.Authorization = `Bearer ${token}`;
   }
-  return config
-})
+  return config;
+});
 
-export default api
+export default api;

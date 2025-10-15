@@ -18,27 +18,20 @@ const upload = multer({ storage });
 // ------------------ Routes ------------------
 
 // GET /api/cars - get all cars (public)
+
+// GET /api/cars/:id - get car by id (public)
 router.get('/', async (req, res) => {
   try {
+    console.log("📡 /api/cars hit - fetching cars...");
     const cars = await Car.find();
+    console.log("✅ Cars fetched successfully:", cars.length);
     res.json(cars);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+    console.error("❌ Server error in /api/cars:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
-// GET /api/cars/:id - get car by id (public)
-router.get('/:id', async (req, res) => {
-  try {
-    const car = await Car.findById(req.params.id);
-    if (!car) return res.status(404).json({ message: "Car not found" });
-    res.json(car);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
 
 // POST /api/cars - add a new car (admin only)
 router.post('/', authMiddleware, async (req, res) => {

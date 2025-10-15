@@ -4,6 +4,7 @@ import * as customerService from '@/services/customerService'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import Header from '@/components/Header'
 import Sidebar from '@/components/Sidebar'
+import { AxiosError } from 'axios';
 
 interface FormState {
   name: string
@@ -24,9 +25,16 @@ export default function CustomersPage() {
   })
 
   const fetchCustomers = async () => {
-    const res = await customerService.getCustomers()
-    setCustomers(res.data)
+  try {
+    const res = await customerService.getCustomers();
+    setCustomers(res.data);
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+    console.error('Error fetching customers:', error);
+    alert(error.response?.data?.message || 'Failed to fetch customers');
   }
+};
+
 
   useEffect(() => {
     fetchCustomers()
