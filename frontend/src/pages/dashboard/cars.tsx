@@ -4,10 +4,10 @@ import * as carService from '@/services/carService';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 
 interface FormState {
-  _id: string;
+  _id?: string;
   name: string;
   make: string;
   model: string;
@@ -16,6 +16,7 @@ interface FormState {
   mileage: number;
   fuelType: string;
   description: string;
+  actions?: string;
 }
 
 interface DecodedToken {
@@ -28,7 +29,6 @@ export default function CarsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editCar, setEditCar] = useState<Car | null>(null);
   const [form, setForm] = useState<FormState>({
-    _id: '',
     name: '',
     make: '',
     model: '',
@@ -43,7 +43,6 @@ export default function CarsPage() {
   useEffect(() => {
     fetchCars();
 
-    // Check user role
     const token = localStorage.getItem('token');
     if (token) {
       const decoded = jwtDecode<DecodedToken>(token);
@@ -60,7 +59,6 @@ export default function CarsPage() {
     if (!isAdmin) return alert('You do not have permission to add a car.');
     setEditCar(null);
     setForm({
-      _id: '',
       name: '',
       make: '',
       model: '',
@@ -78,14 +76,15 @@ export default function CarsPage() {
     setEditCar(car);
     setForm({
       _id: car._id,
-      name: car.name || '',
+      name: car.name,
       make: car.make,
       model: car.model,
       year: car.year,
-      price: car.price || 0,
-      mileage: car.mileage || 0,
-      fuelType: car.fuelType || '',
-      description: car.description || '',
+      price: car.price,
+      mileage: car.mileage,
+      fuelType: car.fuelType,
+      description: car.description,
+      actions: car.actions,
     });
     setModalOpen(true);
   };
@@ -102,14 +101,18 @@ export default function CarsPage() {
     e.preventDefault();
     try {
       if (!isAdmin) return alert('You do not have permission.');
-      if (editCar) {
-        await carService.updateCar(editCar._id, form);
+      const payload: Omit<Car, '_id'> = {
+        ...form,
+        actions: form.actions || '',
+      };
+      if (editCar && editCar._id) {
+        await carService.updateCar(editCar._id, payload);
       } else {
-        await carService.createCar(form);
+        await carService.createCar(payload);
       }
       setModalOpen(false);
       fetchCars();
-    } catch (err) {
+    } catch (err: unknown) {
       if (err instanceof Error) {
         alert(err.message);
       } else {
@@ -193,24 +196,88 @@ export default function CarsPage() {
               <div className="bg-white/10 backdrop-blur-lg border border-white/10 rounded-3xl p-8 w-full max-w-md shadow-2xl shadow-black/50">
                 <h2 className="text-2xl font-bold text-white mb-6">{editCar ? 'Edit Car' : 'Add Car'}</h2>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                  <input type="text" placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="bg-white/20 border border-white/20 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder-white/60" />
-                  <input type="text" placeholder="Make" value={form.make} onChange={(e) => setForm({ ...form, make: e.target.value })} required className="bg-white/20 border border-white/20 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder-white/60" />
-                  <input type="text" placeholder="Model" value={form.model} onChange={(e) => setForm({ ...form, model: e.target.value })} required className="bg-white/20 border border-white/20 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder-white/60" />
-                  <input type="number" placeholder="Year" value={form.year} onChange={(e) => setForm({ ...form, year: Number(e.target.value) })} required className="bg-white/20 border border-white/20 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder-white/60" />
-                  <input type="number" placeholder="Price" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} required className="bg-white/20 border border-white/20 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder-white/60" />
-                  <input type="number" placeholder="Mileage" value={form.mileage} onChange={(e) => setForm({ ...form, mileage: Number(e.target.value) })} required className="bg-white/20 border border-white/20 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder-white/60" />
-                  <select value={form.fuelType} onChange={(e) => setForm({ ...form, fuelType: e.target.value })} required className="bg-white/20 border border-white/20 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400">
-                     <option value="" style={{ color: "black" }}>Select Fuel Type</option>
-                    <option value="Petrol" style={{ color: "black" }}>Petrol</option>
-                    <option value="Diesel" style={{ color: "black" }}>Diesel</option>
-                    <option value="Electric" style={{ color: "black" }}>Electric</option>
-                    <option value="Hybrid" style={{ color: "black" }}>Hybrid</option>
-                    <option value="Hybrid" style={{ color: "black" }}>Gas</option>
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    required
+                    className="bg-white/20 border border-white/20 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder-white/60"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Make"
+                    value={form.make}
+                    onChange={(e) => setForm({ ...form, make: e.target.value })}
+                    required
+                    className="bg-white/20 border border-white/20 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder-white/60"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Model"
+                    value={form.model}
+                    onChange={(e) => setForm({ ...form, model: e.target.value })}
+                    required
+                    className="bg-white/20 border border-white/20 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder-white/60"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Year"
+                    value={form.year}
+                    onChange={(e) => setForm({ ...form, year: Number(e.target.value) })}
+                    required
+                    className="bg-white/20 border border-white/20 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder-white/60"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Price"
+                    value={form.price}
+                    onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
+                    required
+                    className="bg-white/20 border border-white/20 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder-white/60"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Mileage"
+                    value={form.mileage}
+                    onChange={(e) => setForm({ ...form, mileage: Number(e.target.value) })}
+                    required
+                    className="bg-white/20 border border-white/20 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder-white/60"
+                  />
+                  <select
+                    value={form.fuelType}
+                    onChange={(e) => setForm({ ...form, fuelType: e.target.value })}
+                    required
+                    className="bg-white/20 border border-white/20 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  >
+                    <option value="">Select Fuel Type</option>
+                    <option value="Petrol">Petrol</option>
+                    <option value="Diesel">Diesel</option>
+                    <option value="Electric">Electric</option>
+                    <option value="Hybrid">Hybrid</option>
+                    <option value="Gas">Gas</option>
                   </select>
-                  <textarea placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required className="bg-white/20 border border-white/20 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder-white/60" />
+                  <textarea
+                    placeholder="Description"
+                    value={form.description}
+                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    required
+                    className="bg-white/20 border border-white/20 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder-white/60"
+                  />
                   <div className="flex justify-end gap-3 mt-4">
-                    <button type="button" onClick={() => setModalOpen(false)} className="bg-gray-400/40 text-white px-4 py-2 rounded-xl hover:bg-gray-500/60 transition">Cancel</button>
-                    <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold shadow-lg shadow-blue-500/40 hover:scale-105 transition-transform">{editCar ? 'Update' : 'Add'}</button>
+                    <button
+                      type="button"
+                      onClick={() => setModalOpen(false)}
+                      className="bg-gray-400/40 text-white px-4 py-2 rounded-xl hover:bg-gray-500/60 transition"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold shadow-lg shadow-blue-500/40 hover:scale-105 transition-transform"
+                    >
+                      {editCar ? 'Update' : 'Add'}
+                    </button>
                   </div>
                 </form>
               </div>

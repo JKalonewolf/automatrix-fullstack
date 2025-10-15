@@ -1,63 +1,60 @@
-// User type for authentication
+// ------------------ User types ------------------
+
+// Basic User type for authentication
 export interface User {
-  id: string
-  name: string
-  email: string
+  id: string;
+  name: string;
+  email: string;
+  role?: 'admin' | 'customer'; // optional role
 }
 
-// Car type
+// Admin user type (can extend User if needed)
+export interface AdminUser extends User {
+  role: 'admin';
+  userID: string;
+}
+
+// ------------------ Car type ------------------
 export interface Car {
-  _id: string
-  name: string
-  make: string
-  model: string
-  year: number
-  price: number
-  mileage: number
-  actions: string
-  fuelType: string
-  description: string
-// optional, since backend allows images
+  _id: string;
+  name: string;
+  make: string;
+  model: string;
+  year: number;
+  price: number;
+  mileage: number;
+  fuelType: string;
+  description: string;
+  actions?: string; // optional UI-only field
 }
 
-
-// Customer type
+// ------------------ Customer type ------------------
 export interface Customer {
-  _id: string
-  name: string
-  email: string
-  phone: string
-  address: string
-  action: string
-  
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  actions?: string; // optional UI-only field
 }
 
-// Service type
+// ------------------ Service types ------------------
+
+// Service type returned from backend (populated objects)
 export interface Service {
   _id: string;
-  customerId: string | Customer; // <-- either ID or populated object
-  carId: Car |string;           // <-- either ID or populated object
+  customerId: string | Customer; // either ID or populated object
+  carId: string | Car;           // either ID or populated object
   serviceType: string;
   notes?: string;
   status?: 'pending' | 'completed';
 }
 
-// Returned from backend (with populated objects)
-
-// Used when creating/updating (with string IDs)
+// Used when creating/updating (send IDs to backend)
 export interface ServiceInput {
   customerId: string;    // string ID to send to backend
   carId: string;         // string ID to send to backend
   serviceType: string;
   notes?: string;
   status?: 'pending' | 'completed';
-}
-
-// Admin user type
-export interface User {
-  id: string
-  userID: string
-  name: string
-  email: string
-  role: 'admin' | 'customer'
 }
